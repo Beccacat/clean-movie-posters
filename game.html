@@ -752,10 +752,6 @@ async function loadMovieDatabase() {
                     </div>
                 </div>
                 
-                <div class="instruction-box">
-                    <h3>Step 1: Spin the Checkerboard</h3>
-                    <p>Click START to begin cycling. Click STOP to lock in a value.</p>
-                </div>
                 
                 <div style="display: flex; justify-content: center; margin: 30px 0;">
                     <div id="criteria-grid" style="display: grid; grid-template-columns: repeat(8, 65px); gap: 4px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 20px; border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);">
@@ -781,7 +777,7 @@ async function loadMovieDatabase() {
                     </div>
                 </div>
                 
-                <button class="action-button" id="checkerboard-button">START CYCLING</button>
+                <button class="action-button" id="checkerboard-button">Lights, Camera, Action!</button>
                 
                 <div id="dynamic-content"></div>
             `;
@@ -793,9 +789,9 @@ async function loadMovieDatabase() {
         const handleCheckerboardButton = () => {
             const button = document.getElementById('checkerboard-button');
             
-            if (button.textContent === 'START CYCLING') {
+            if (button.textContent === 'Lights, Camera, Action!') {
                 startCycling();
-                button.textContent = 'STOP CYCLING';
+                button.textContent = 'Annnnnnd, cut!';
             } else {
                 stopCycling();
             }
@@ -1039,15 +1035,42 @@ async function loadMovieDatabase() {
                 </div>
             `;
             
-            // Attach click handlers
-            document.querySelectorAll('#step3-grid .selection-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const chosenValue = option.dataset.value;
-                    gameState.criteriaSelected[chosenType] = chosenValue;
-                    console.log('Player selected:', chosenValue, 'for', chosenType);
-                    showStep4();
-                });
+            // Attach click handlers for selection
+let selectedOption = null;
+document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
+    option.addEventListener('click', () => {
+        // Remove previous selection
+        document.querySelectorAll('#step4-grid .selection-option').forEach(opt => 
+            opt.classList.remove('selected'));
+        
+        // Highlight this selection
+        option.classList.add('selected');
+        selectedOption = option.dataset.value;
+        
+        // Show or update confirm button
+        let confirmBtn = document.getElementById('confirm-step4-btn');
+        if (!confirmBtn) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.textAlign = 'center';
+            btnContainer.style.marginTop = '20px';
+            btnContainer.innerHTML = `
+                <button class="action-button" id="confirm-step4-btn">Confirm Selection</button>
+            `;
+            document.getElementById('step4-grid').parentNode.insertBefore(
+                btnContainer, 
+                document.getElementById('step4-grid').nextSibling
+            );
+            
+            document.getElementById('confirm-step4-btn').addEventListener('click', () => {
+                if (selectedOption) {
+                    gameState.criteriaSelected[remainingType] = selectedOption;
+                    console.log('Final criteria confirmed:', gameState.criteriaSelected);
+                    showMovieSelection();
+                }
             });
+        }
+    });
+});
         };
         
         const showStep4 = () => {
@@ -1100,17 +1123,42 @@ async function loadMovieDatabase() {
                 </div>
             `;
             
-            // Attach click handlers
-            document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const chosenValue = option.dataset.value;
-                    gameState.criteriaSelected[remainingType] = chosenValue;
-                    console.log('Final criteria selected:', gameState.criteriaSelected);
-                    
-                    // Show complete criteria and move to movie
+            // Attach click handlers for selection
+let selectedOption = null;
+document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
+    option.addEventListener('click', () => {
+        // Remove previous selection
+        document.querySelectorAll('#step4-grid .selection-option').forEach(opt => 
+            opt.classList.remove('selected'));
+        
+        // Highlight this selection
+        option.classList.add('selected');
+        selectedOption = option.dataset.value;
+        
+        // Show or update confirm button
+        let confirmBtn = document.getElementById('confirm-step4-btn');
+        if (!confirmBtn) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.textAlign = 'center';
+            btnContainer.style.marginTop = '20px';
+            btnContainer.innerHTML = `
+                <button class="action-button" id="confirm-step4-btn">Confirm Selection</button>
+            `;
+            document.getElementById('step4-grid').parentNode.insertBefore(
+                btnContainer, 
+                document.getElementById('step4-grid').nextSibling
+            );
+            
+            document.getElementById('confirm-step4-btn').addEventListener('click', () => {
+                if (selectedOption) {
+                    gameState.criteriaSelected[remainingType] = selectedOption;
+                    console.log('Final criteria confirmed:', gameState.criteriaSelected);
                     showMovieSelection();
-                });
+                }
             });
+        }
+    });
+});
         };
         
         const showMovieSelection = () => {

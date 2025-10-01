@@ -1262,25 +1262,197 @@ async function loadMovieDatabase() {
         };
         
         const showResults = () => {
-            const movie = gameState.currentMovie;
-            const dynamicContent = document.getElementById('dynamic-content');
-            
-            dynamicContent.innerHTML = `
-                <div style="text-align: center;">
-                    <div style="background: rgba(255, 215, 0, 0.2); border-radius: 15px; padding: 20px; margin-bottom: 30px; border: 2px solid #ffd700;">
-                        <h2 style="color: #ffd700; margin: 0 0 10px 0;">The Answer Was:</h2>
-                        <h3 style="color: #00ffff; margin: 0;">${movie.title}</h3>
-                        <div style="color: #fff; margin-top: 10px; font-size: 14px;">${movie.primaryGenre} • ${movie.generation} • ${movie.difficulty}</div>
-                    </div>
-                    
-                    <div style="text-align: center; margin: 30px 0;">
-                        <p style="color: #00ffff; margin-bottom: 20px;">Scoring system will be added next</p>
-                        <button class="action-button" onclick="window.location.reload()">Play Again</button>
-                    </div>
-                </div>
-            `;
-        };
+    const movie = gameState.currentMovie;
+    const dynamicContent = document.getElementById('dynamic-content');
+    
+    // Collect all player answers
+    const playerResults = gameState.players.map((player, index) => {
+        const answerInput = document.getElementById(`answer-${index}`);
+        const userAnswer = answerInput ? answerInput.value.trim() : '';
+        const isCorrect = checkAnswer(userAnswer, movie.title);
+        const scoreData = calculateScore(isCorrect, player, index);
         
+        return {
+            player: player,
+            playerIndex: index,
+            answer: userAnswer,
+            isCorrect: isCorrect,
+            pointsEarned: scoreData.points,
+            breakdown: scoreData.breakdown
+        };
+    });
+    
+    // Update scores
+    playerResults.forEach(result => {
+        gameState.players[result.playerIndex].score += result.pointsEarned;
+    });
+    
+    // Display results
+    dynamicContent.innerHTML = `
+        <div style="text-align: center;">
+            <div style="background: rgba(255, 215, 0, 0.2); border-radius: 15px; padding: 20px; margin-bottom: 30px; border: 2px solid #ffd700;">
+                <h2 style="color: #ffd700; margin: 0 0 10px 0;">The Answer Was:</h2>
+                <h3 style="color: #00ffff; margin: 0;">${movie.title}</h3>
+                <div style="color: #fff; margin-top: 10px; font-size: 14px;">${movie.primaryGenre} • ${movie.generation} • ${movie.difficulty}</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 30px 0;">
+                ${playerResults.map(result => `
+                    <div style="background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 20px; border: 2px solid ${result.isCorrect ? '#00ff00' : '#ff6347'};">
+                        <h3 style="color: ${result.isCorrect ? '#00ff00' : '#ff6347'}; margin-bottom: 10px;">
+                            ${result.player.name} ${result.isCorrect ? '✓' : '✗'}
+                        </h3>
+                        <div style="color: #fff; margin-bottom: 10px; font-size: 14px;">
+                            ${result.answer || '(no answer)'}
+                        </div>
+                        <div style="color: #ffd700; font-size: 24px; font-weight: bold; margin: 10px 0;">
+                            ${result.pointsEarned > 0 ? '+' : ''}${result.pointsEarned} pts
+                        </div>
+                        <div style="color: #00ffff; font-size: 12px;">
+                            ${result.breakdown}
+                        </div>
+                        <div style="color: #fff; margin-top: 10px; font-weight: bold;">
+                            Total: ${result.player.score} pts
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <button class="action-button" onclick="nextRound()">Next Round</button>
+        </div>
+    `;
+};
+
+function checkAnswer(userAnswer, correctTitle) {
+    if (!userAnswer) return false;
+    
+    // Normalize both strings
+    const normalize = (str) => {
+        return str.toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove punctuation
+            .replace(/\b(the|a|an)\b/g, '') // Remove articles
+            .replace(/\s+/g, ' ') // Normalize spaces
+            .trim();
+    };
+    
+    const normalizedAnswer = normalize(userAnswer);
+    const normalizedTitle = normalize(correctTitle);
+    
+    // Exact match
+    if (normalizedAnswer === normalizedTitle) return true;
+    
+    // Check if answer contains all major words from title
+    const titleWords = normalizedTitle.split(' ').filter(word => word.length > 2);
+    const answerWords = normalizedAnswer.split(' ');
+    
+    const allWordsPresent = titleWords.every(titleWord => {
+        return answerWords.some(answerWord => {
+            // Allow for typos using Levenshtein distance
+            return levenshteinDistance(titleWord, answerWord) <= Math.floor(titleWord.length * 0.3);
+        });
+    });
+    
+    return allWordsPresent;
+}
+
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
+
+function calculateScore(isCorrect, player, playerIndex) {
+    if (!isCorrect) {
+        // Check for penalty mode
+        if (gameState.penaltyMode) {
+            const movie = gameState.currentMovie;
+            const difficulty = movie.difficulty;
+            const isInBirthGen = movie.generation === player.generation;
+            const isInFavoriteGenre = player.favoriteGenres.includes(movie.primaryGenre);
+            
+            if (isInBirthGen && isInFavoriteGenre) {
+                if (difficulty === 'Gimme') {
+                    return { points: -2, breakdown: 'Wrong in birth gen + favorite genre (Gimme): -2' };
+                } else if (difficulty === 'Easy') {
+                    return { points: -1, breakdown: 'Wrong in birth gen + favorite genre (Easy): -1' };
+                }
+            }
+        }
+        return { points: 0, breakdown: 'Incorrect answer' };
+    }
+    
+    // Base points
+    const basePoints = {
+        'Gimme': 1,
+        'Easy': 3,
+        'Medium': 5,
+        'Hard': 8,
+        'Stumper': 12
+    };
+    
+    const movie = gameState.currentMovie;
+    const difficulty = movie.difficulty;
+    let points = basePoints[difficulty] || 0;
+    let breakdown = `Base (${difficulty}): ${points}`;
+    
+    // Generation bonus (Medium and above only)
+    if (['Medium', 'Hard', 'Stumper'].includes(difficulty)) {
+        const genOrder = ['GenX', 'GenY', 'GenZ'];
+        const playerGenIndex = genOrder.indexOf(player.generation);
+        const movieGenIndex = genOrder.indexOf(movie.generation);
+        const genGap = Math.abs(playerGenIndex - movieGenIndex);
+        
+        if (genGap > 0) {
+            points += genGap;
+            breakdown += ` + Gen bonus: +${genGap}`;
+        }
+    }
+    
+    // Least-watched genre bonus (Medium and above only)
+    if (['Medium', 'Hard', 'Stumper'].includes(difficulty)) {
+        if (player.leastWatchedGenres.includes(movie.primaryGenre)) {
+            points += 1;
+            breakdown += ' + Least-watched genre: +1';
+        }
+    }
+    
+    return { points, breakdown };
+}
+
+function nextRound() {
+    // Rotate to next player
+    gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+    
+    // Reset criteria
+    gameState.criteriaSelected = {};
+    
+    // Re-render game screen
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    renderInitialGameScreen();
+}        
         document.addEventListener('DOMContentLoaded', async () => {
     await loadMovieDatabase();
     initializeGame();

@@ -1145,6 +1145,11 @@ async function loadMovieDatabase() {
             const genre = gameState.criteriaSelected.Genre;
             const generation = gameState.criteriaSelected.Generation;
             const difficulty = gameState.criteriaSelected.Difficulty;
+
+ console.log('=== MOVIE SELECTION DEBUG ===');
+    console.log('Criteria selected:', gameState.criteriaSelected);
+    console.log('Looking for:', { genre, generation, difficulty });
+    console.log('Sample movies from database:', movieDatabase.slice(0, 3));
             
             // Filter movies
             const matchingMovies = movieDatabase.filter(movie => 
@@ -1329,7 +1334,7 @@ function checkAnswer(userAnswer, correctTitle) {
     // Normalize both strings
     const normalize = (str) => {
         return str.toLowerCase()
-            .replace(/[^\w\s]/g, '') // Remove punctuation
+            .replace(/[^\w\s]/g, '') // Remove punctuation  
             .replace(/\b(the|a|an)\b/g, '') // Remove articles
             .replace(/\s+/g, ' ') // Normalize spaces
             .trim();
@@ -1341,13 +1346,23 @@ function checkAnswer(userAnswer, correctTitle) {
     // Exact match
     if (normalizedAnswer === normalizedTitle) return true;
     
+    // Check without spaces (handles "Ladybird" vs "Lady Bird")
+    const answerNoSpaces = normalizedAnswer.replace(/\s/g, '');
+    const titleNoSpaces = normalizedTitle.replace(/\s/g, '');
+    
+    if (answerNoSpaces === titleNoSpaces) return true;
+    
+    // Allow 30% character difference for typos
+    if (levenshteinDistance(answerNoSpaces, titleNoSpaces) <= Math.floor(titleNoSpaces.length * 0.3)) {
+        return true;
+    }
+    
     // Check if answer contains all major words from title
     const titleWords = normalizedTitle.split(' ').filter(word => word.length > 2);
     const answerWords = normalizedAnswer.split(' ');
     
     const allWordsPresent = titleWords.every(titleWord => {
         return answerWords.some(answerWord => {
-            // Allow for typos using Levenshtein distance
             return levenshteinDistance(titleWord, answerWord) <= Math.floor(titleWord.length * 0.3);
         });
     });

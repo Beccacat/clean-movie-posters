@@ -1034,13 +1034,12 @@ async function loadMovieDatabase() {
                     <button class="action-button" onclick="window.showStep2()" style="background: rgba(255, 255, 255, 0.2);">Go Back</button>
                 </div>
             `;
-            
             // Attach click handlers for selection
 let selectedOption = null;
-document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
+document.querySelectorAll('#step3-grid .selection-option').forEach(option => {
     option.addEventListener('click', () => {
         // Remove previous selection
-        document.querySelectorAll('#step4-grid .selection-option').forEach(opt => 
+        document.querySelectorAll('#step3-grid .selection-option').forEach(opt => 
             opt.classList.remove('selected'));
         
         // Highlight this selection
@@ -1048,30 +1047,30 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
         selectedOption = option.dataset.value;
         
         // Show or update confirm button
-        let confirmBtn = document.getElementById('confirm-step4-btn');
+        let confirmBtn = document.getElementById('confirm-step3-btn');
         if (!confirmBtn) {
             const btnContainer = document.createElement('div');
             btnContainer.style.textAlign = 'center';
             btnContainer.style.marginTop = '20px';
             btnContainer.innerHTML = `
-                <button class="action-button" id="confirm-step4-btn">Confirm Selection</button>
+                <button class="action-button" id="confirm-step3-btn">Confirm Selection</button>
             `;
-            document.getElementById('step4-grid').parentNode.insertBefore(
+            document.getElementById('step3-grid').parentNode.insertBefore(
                 btnContainer, 
-                document.getElementById('step4-grid').nextSibling
+                document.getElementById('step3-grid').nextSibling
             );
             
-            document.getElementById('confirm-step4-btn').addEventListener('click', () => {
+            document.getElementById('confirm-step3-btn').addEventListener('click', () => {
                 if (selectedOption) {
-                    gameState.criteriaSelected[remainingType] = selectedOption;
-                    console.log('Final criteria confirmed:', gameState.criteriaSelected);
-                    showMovieSelection();
+                    gameState.criteriaSelected[chosenType] = selectedOption;
+                    console.log('Player confirmed:', selectedOption, 'for', chosenType);
+                    showStep4();
                 }
             });
         }
     });
 });
-        };
+                    };
         
         const showStep4 = () => {
             // Figure out which type is left

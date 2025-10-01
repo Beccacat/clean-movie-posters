@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>50 Years of Movie Posters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f1419 0%, #2c5aa0 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .game-tagline {
+            font-size: 1.2em;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+        
+        .setup-screen {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .player-count-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .player-setup {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .player-card {
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .genre-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .genre-chip {
+            padding: 8px 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .genre-chip:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .genre-chip.selected {
+            background: #ffd700;
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        
+        .genre-chip.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .private-section {
+            background: rgba(255, 99, 71, 0.1);
+            border: 2px dashed rgba(255, 99, 71, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .private-label {
+            color: #ff6347;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .penalty-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 2px solid #666;
+        }
+        
+        .toggle-switch.active {
+            background: #ff6347;
+            border-color: #ff6347;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+        
+        .start-button {
+            background: linear-gradient(45deg, #ffd700, #00ffff);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            padding: 18px 45px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+        
+        .start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .validation-status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 99, 71, 0.1);
+            border: 2px solid rgba(255, 99, 71, 0.5);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .validation-status ul {
+            color: #ff6347;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        #game-screen {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .action-button {
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 30px auto;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            color: #000;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .action-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .selection-option {
+            padding: 20px 15px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .selection-option:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .selection-option.selected {
+            background: #ffd700;
+            color: #000;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        @keyframes atomic-pulse {
+            0% { 
+                box-shadow: 0 0 20px rgba(255,215,0,1);
+                transform: scale(1.2);
+            }
+            100% { 
+                box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 60px rgba(255,215,0,0.8);
+                transform: scale(1.25);
+            }
+        }
+
+        .instruction-box {
+            background: rgba(0, 255, 255, 0.15);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .instruction-box h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .instruction-box p {
+            color: #00ffff;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .criteria-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .criteria-item {
+            text-align: center;
+        }
+
+        .criteria-label {
+            display: block;
+            font-size: 14px;
+            color: #00ffff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .criteria-value {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1 class="game-title">50 Years of Movie Posters</h1>
+            <div class="game-tagline">Guess the Film, Images Only</div>
+        </div>
+        
+        <div class="setup-screen" id="setup-screen">
+            <div class="setup-section">
+                <h2 class="section-title">Game Configuration</h2>
+                <div class="player-count-section">
+                    <label style="font-size: 16px; margin-bottom: 10px; display: block;">Number of Players:</label>
+                    <select id="player-count" style="width: 200px; padding: 12px; font-size: 16px; text-align: center;">
+                        <option value="2">2 Players</option>
+                        <option value="3">3 Players</option>
+                        <option value="4" selected>4 Players</option>
+                        <option value="5">5 Players</option>
+                        <option value="6">6 Players</option>
+                        <option value="7">7 Players</option>
+                        <option value="8">8 Players</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <label style="font-size: 16px; margin-bottom: 10px; display: block;">Platform Setup:</label>
+                    <select id="platform-setup" style="width: 300px; padding: 12px; font-size: 16px; text-align: center;">
+                        <option value="desktop" selected>No mobile bonus time needed</option>
+                        <option value="mobile">Add mobile bonus time (+15 seconds)</option>
+                    </select>
+                    <div id="timer-display" style="margin-top: 10px; font-size: 14px; color: #00ffff;">
+                        Timer Settings: Gimme 15s • Easy 20s • Medium 30s • Hard 40s • Stumper 45s
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setup-section">
+                <h2 class="section-title">Host Setup</h2>
+                <div class="player-setup" id="host-setup"></div>
+            </div>
+            
+            <div class="setup-section">
+                <h2 class="section-title">Player Private Info</h2>
+                <div class="player-setup" id="private-setup"></div>
+            </div>
+            
+            <div class="penalty-toggle">
+                <span>Penalty Mode (Gimme/Easy movies in favorite genre + birth decade = -2/-1 points):</span>
+                <div class="toggle-switch" id="penalty-toggle">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <button class="start-button" id="start-game" disabled>Start Game!</button>
+            
+            <div class="validation-status" id="validation-status">
+                <div style="color: #ff6347; font-weight: bold; margin-bottom: 10px;">Please complete the following:</div>
+                <ul id="validation-list"></ul>
+            </div>
+        </div>
+        
+        <div id="game-screen" style="display: none;"></div>
+    </div>
+
+    <script>
+        console.log('=== CLEAN REBUILD - Script starting ===');
+        
+        // Data
+        const genres = ['Action', 'Adventure', 'Animated', 'Comedy', 'Crime', 'Drama', 'Fantasy', 'Horror', 'Musical', 'Romance', 'Sci-Fi', 'Thriller', 'Western'];
+        const difficulties = ['Gimme', 'Easy', 'Medium', 'Hard', 'Stumper'];
+        const generations = ['GenX', 'GenY', 'GenZ'];
+        const specialSpaces = ['Solo Streak', 'Guilty Pleasure', 'At the Movies', 'Couch Cinema', 'Wild Card'];
+        // Remove special spaces for now - add back later
+        const allCriteriaValues = [...genres, ...difficulties, ...generations, ...generations];
+        
+        const genreDefinitions = {
+            'Action': 'Fast-paced films with physical stunts, chases, fights, and explosions',
+            'Adventure': 'Exciting journeys, quests, and exploration in exotic locations',
+            'Animated': 'Films using animation techniques including hand-drawn, CGI, and stop-motion',
+            'Comedy': 'Humorous films designed to entertain and amuse audiences',
+            'Crime': 'Stories involving criminal activity, law enforcement, and the justice system',
+            'Drama': 'Serious, realistic stories focusing on character development and emotion',
+            'Fantasy': 'Magical worlds with supernatural elements and mythical creatures',
+            'Horror': 'Films designed to frighten, create suspense, and invoke terror',
+            'Musical': 'Stories told through songs, dance numbers, and musical performances',
+            'Romance': 'Love stories focusing on relationships and romantic entanglements',
+            'Sci-Fi': 'Science fiction with futuristic technology, space, and speculative concepts',
+            'Thriller': 'Suspenseful films with tension, excitement, and plot twists',
+            'Western': 'Stories set in the American frontier, typically featuring cowboys and outlaws'
+        };
+        
+        let movieDatabase = [];
+
+async function loadMovieDatabase() {
+    try {
+        const response = await fetch('./Movies.json');
+        const rawData = await response.json();
+        
+        movieDatabase = rawData.map(movie => ({
+            title: movie.Title,
+            primaryGenre: movie["Primary Genre"],
+            difficulty: movie["GenY/GenZ Difficulty"],
+            generation: movie.Generation,
+            posterUrl: movie["Movie URL__1"]
+        })).filter(movie => movie.difficulty && movie.difficulty.trim() !== '');
+        
+        console.log(`✅ Loaded ${movieDatabase.length} movies`);
+        return true;
+    } catch (error) {
+        console.error('❌ Error loading movies:', error);
+        alert('Failed to load Movies.json. Make sure it is in the same folder as this HTML file.');
+        return false;
+    }
+}
+        
+        let gameState = {};
+        let cyclingInterval = null;
+        let currentHighlightedIndex = null; // Track which square is currently highlighted
+        
+        // ===== SETUP SCREEN FUNCTIONS =====
+        const initializeGame = () => {
+            console.log('Initializing setup screen');
+            updatePlayerCount();
+            setupEventListeners();
+        };
+        
+        const setupEventListeners = () => {
+            document.getElementById('player-count').addEventListener('change', updatePlayerCount);
+            document.getElementById('platform-setup').addEventListener('change', updateTimerDisplay);
+            document.getElementById('penalty-toggle').addEventListener('click', togglePenaltyMode);
+            document.getElementById('start-game').addEventListener('click', startGame);
+        };
+        
+        const updatePlayerCount = () => {
+            const count = parseInt(document.getElementById('player-count').value);
+            generatePlayerForms(count);
+            validateSetup();
+        };
+        
+        const generatePlayerForms = (count) => {
+            const hostSetup = document.getElementById('host-setup');
+            const privateSetup = document.getElementById('private-setup');
+            
+            hostSetup.innerHTML = '';
+            privateSetup.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const hostCard = document.createElement('div');
+                hostCard.className = 'player-card';
+                hostCard.innerHTML = `
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Player ${i}</h3>
+                    <div class="input-group">
+                        <label>Player Name:</label>
+                        <input type="text" id="player-${i}-name" placeholder="Enter name" />
+                    </div>
+                    <div class="input-group">
+                        <label>Least Watched Genres (Pick 2):</label>
+                        <div class="genre-select" id="least-genres-${i}">
+                            ${genres.map(genre => `<div class="genre-chip" data-genre="${genre}" title="${genreDefinitions[genre]}">${genre}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+                hostSetup.appendChild(hostCard);
+                
+                const privateCard = document.createElement('div');
+                privateCard.className = 'player-card';
+                privateCard.innerHTML = `
+                    <div class="private-section">
+                        <div class="private-label">Player ${i} - Private Info</div>
+                        <div class="input-group">
+                            <label>Your Generation:</label>
+                            <select id="player-${i}-generation">
+                                <option value="">Select generation</option>
+                                <option value="GenX">GenX (1965-1980)</option>
+                                <option value="GenY">GenY (1981-1996)</option>
+                                <option value="GenZ">GenZ (1997-2012)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Most Watched Genres (Pick 2):</label>
+                            <div class="genre-select" id="most-genres-${i}">
+                                ${genres.map(genre => `<div class="genre-chip" data-genre="${genre}" title="${genreDefinitions[genre]}">${genre}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                privateSetup.appendChild(privateCard);
+                
+                setupGenreSelection(`least-genres-${i}`, 2);
+                setupGenreSelection(`most-genres-${i}`, 2);
+                document.getElementById(`player-${i}-name`).addEventListener('input', validateSetup);
+                document.getElementById(`player-${i}-generation`).addEventListener('change', validateSetup);
+            }
+        };
+        
+        const setupGenreSelection = (containerId, maxSelection) => {
+            const container = document.getElementById(containerId);
+            const chips = container.querySelectorAll('.genre-chip');
+            
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const selected = container.querySelectorAll('.genre-chip.selected');
+                    
+                    if (chip.classList.contains('selected')) {
+                        chip.classList.remove('selected');
+                    } else if (selected.length < maxSelection && !chip.classList.contains('disabled')) {
+                        chip.classList.add('selected');
+                    }
+                    
+                    updateGenreChips(containerId);
+                    validateSetup();
+                });
+            });
+        };
+        
+        const updateGenreChips = (containerId) => {
+            const playerNum = containerId.match(/\d+/)[0];
+            updateChipsForPlayer(playerNum);
+        };
+        
+        const updateChipsForPlayer = (playerNum) => {
+            const leastContainer = document.getElementById(`least-genres-${playerNum}`);
+            const mostContainer = document.getElementById(`most-genres-${playerNum}`);
+            
+            if (!leastContainer || !mostContainer) return;
+            
+            const leastChips = leastContainer.querySelectorAll('.genre-chip');
+            const mostChips = mostContainer.querySelectorAll('.genre-chip');
+            
+            const leastSelected = Array.from(leastContainer.querySelectorAll('.genre-chip.selected')).map(c => c.dataset.genre);
+            const mostSelected = Array.from(mostContainer.querySelectorAll('.genre-chip.selected')).map(c => c.dataset.genre);
+            
+            leastChips.forEach(chip => {
+                const genre = chip.dataset.genre;
+                const isSelectedHere = chip.classList.contains('selected');
+                const isSelectedInMost = mostSelected.includes(genre);
+                const tooManySelected = leastSelected.length >= 2 && !isSelectedHere;
+                
+                if (tooManySelected || isSelectedInMost) {
+                    chip.classList.add('disabled');
+                } else {
+                    chip.classList.remove('disabled');
+                }
+            });
+            
+            mostChips.forEach(chip => {
+                const genre = chip.dataset.genre;
+                const isSelectedHere = chip.classList.contains('selected');
+                const isSelectedInLeast = leastSelected.includes(genre);
+                const tooManySelected = mostSelected.length >= 2 && !isSelectedHere;
+                
+                if (tooManySelected || isSelectedInLeast) {
+                    chip.classList.add('disabled');
+                } else {
+                    chip.classList.remove('disabled');
+                }
+            });
+        };
+        
+        const updateTimerDisplay = () => {
+            const isMobile = document.getElementById('platform-setup').value === 'mobile';
+            const times = {
+                'Gimme': isMobile ? 30 : 15,
+                'Easy': isMobile ? 35 : 20,
+                'Medium': isMobile ? 45 : 30,
+                'Hard': isMobile ? 55 : 40,
+                'Stumper': isMobile ? 60 : 45
+            };
+            
+            document.getElementById('timer-display').textContent = 
+                `Timer Settings: Gimme ${times.Gimme}s • Easy ${times.Easy}s • Medium ${times.Medium}s • Hard ${times.Hard}s • Stumper ${times.Stumper}s`;
+        };
+        
+        const togglePenaltyMode = () => {
+            document.getElementById('penalty-toggle').classList.toggle('active');
+        };
+        
+        const validateSetup = () => {
+            const count = parseInt(document.getElementById('player-count').value);
+            const errors = [];
+            
+            for (let i = 1; i <= count; i++) {
+                const name = document.getElementById(`player-${i}-name`).value.trim();
+                const generation = document.getElementById(`player-${i}-generation`).value;
+                const leastGenres = document.querySelectorAll(`#least-genres-${i} .genre-chip.selected`);
+                const mostGenres = document.querySelectorAll(`#most-genres-${i} .genre-chip.selected`);
+                
+                if (!name) errors.push(`Player ${i} name missing`);
+                if (!generation) errors.push(`Player ${i} generation missing`);
+                if (leastGenres.length !== 2) errors.push(`Player ${i} needs 2 least-watched genres`);
+                if (mostGenres.length !== 2) errors.push(`Player ${i} needs 2 most-watched genres`);
+            }
+            
+            const startButton = document.getElementById('start-game');
+            const validationStatus = document.getElementById('validation-status');
+            const validationList = document.getElementById('validation-list');
+            
+            if (errors.length === 0) {
+                startButton.disabled = false;
+                validationStatus.style.display = 'none';
+            } else {
+                startButton.disabled = true;
+                validationStatus.style.display = 'block';
+                validationList.innerHTML = errors.map(error => `<li>${error}</li>`).join('');
+            }
+        };
+        
+        // ===== GAME START =====
+        const startGame = () => {
+            const count = parseInt(document.getElementById('player-count').value);
+            const players = [];
+            
+            for (let i = 1; i <= count; i++) {
+                const name = document.getElementById(`player-${i}-name`).value.trim();
+                const generation = document.getElementById(`player-${i}-generation`).value;
+                const leastGenres = Array.from(document.querySelectorAll(`#least-genres-${i} .genre-chip.selected`))
+                    .map(chip => chip.dataset.genre);
+                const mostGenres = Array.from(document.querySelectorAll(`#most-genres-${i} .genre-chip.selected`))
+                    .map(chip => chip.dataset.genre);
+                
+                players.push({
+                    name,
+                    generation,
+                    leastWatchedGenres: leastGenres,
+                    favoriteGenres: mostGenres,
+                    score: 0
+                });
+            }
+            
+            gameState = {
+                players: players,
+                currentPlayerIndex: 0,
+                penaltyMode: document.getElementById('penalty-toggle').classList.contains('active'),
+                isMobile: document.getElementById('platform-setup').value === 'mobile',
+                criteriaSelected: {}
+            };
+            
+            console.log('Game started:', gameState);
+            
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            
+            renderInitialGameScreen();
+        };
+        
+        // ===== GAME SCREEN - RENDER ONCE =====
+        const renderInitialGameScreen = () => {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const gameScreen = document.getElementById('game-screen');
+            
+            gameScreen.innerHTML = `
+                <div style="background: rgba(255, 215, 0, 0.2); border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 2px solid #ffd700; text-align: center;">
+                    <h3 style="color: #ffd700; margin: 0;">${currentPlayer.name}'s Turn</h3>
+                </div>
+                
+                <div style="background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 2px solid rgba(0, 255, 255, 0.3);">
+                    <h3 style="color: #ffd700; text-align: center; margin-bottom: 15px;">Current Scores</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                        ${gameState.players.map((player, index) => `
+                            <div style="text-align: center; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; ${index === gameState.currentPlayerIndex ? 'border: 2px solid #ffd700;' : ''}">
+                                <div style="color: #ffd700; font-weight: bold;">${player.name}</div>
+                                <div style="color: #00ffff; font-size: 1.2em;">${player.score} pts</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="instruction-box">
+                    <h3>Step 1: Spin the Checkerboard</h3>
+                    <p>Click START to begin cycling. Click STOP to lock in a value.</p>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin: 30px 0;">
+                    <div id="criteria-grid" style="display: grid; grid-template-columns: repeat(8, 65px); gap: 4px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 20px; border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);">
+                        ${Array(32).fill(0).map((_, i) => {
+                            const isRed = (Math.floor(i / 8) + i) % 2 === 0;
+                            const initialValue = allCriteriaValues[Math.floor(Math.random() * allCriteriaValues.length)];
+                            return `<div class="checkerboard-square" data-index="${i}" style="
+                                width: 65px;
+                                height: 45px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 11px;
+                                font-weight: bold;
+                                border: 2px solid rgba(255, 255, 255, 0.5);
+                                border-radius: 8px;
+                                text-align: center;
+                                background: ${isRed ? 'linear-gradient(45deg, #ff6347, #ff4500)' : 'linear-gradient(45deg, #4169e1, #1e90ff)'};
+                                color: #fff;
+                                text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+                            ">${initialValue}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                
+                <button class="action-button" id="checkerboard-button">START CYCLING</button>
+                
+                <div id="dynamic-content"></div>
+            `;
+            
+            document.getElementById('checkerboard-button').addEventListener('click', handleCheckerboardButton);
+        };
+        
+        // ===== CHECKERBOARD CYCLING =====
+        const handleCheckerboardButton = () => {
+            const button = document.getElementById('checkerboard-button');
+            
+            if (button.textContent === 'START CYCLING') {
+                startCycling();
+                button.textContent = 'STOP CYCLING';
+            } else {
+                stopCycling();
+            }
+        };
+        
+        const startCycling = () => {
+            const squares = document.querySelectorAll('.checkerboard-square');
+            
+            cyclingInterval = setInterval(() => {
+                squares.forEach((square, index) => {
+                    const isRed = (Math.floor(index / 8) + index) % 2 === 0;
+                    square.style.background = isRed ? 
+                        'linear-gradient(45deg, #ff6347, #ff4500)' : 
+                        'linear-gradient(45deg, #4169e1, #1e90ff)';
+                    square.style.color = '#fff';
+                    square.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
+                    square.style.animation = 'none';
+                    square.style.transform = 'none';
+                    square.style.boxShadow = 'none';
+                    square.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+                    square.style.zIndex = '1';
+                    
+                    const randomValue = allCriteriaValues[Math.floor(Math.random() * allCriteriaValues.length)];
+                    square.textContent = randomValue;
+                });
+                
+                const randomIndex = Math.floor(Math.random() * squares.length);
+                currentHighlightedIndex = randomIndex; // Track it
+                const selectedSquare = squares[randomIndex];
+                selectedSquare.style.background = 'linear-gradient(45deg, #ffd700, #ffed4e)';
+                selectedSquare.style.color = '#000';
+                selectedSquare.style.textShadow = 'none';
+                selectedSquare.style.animation = 'atomic-pulse 0.5s infinite alternate';
+                selectedSquare.style.zIndex = '100';
+            }, 325);
+        };
+        
+        const stopCycling = () => {
+            clearInterval(cyclingInterval);
+            cyclingInterval = null;
+            
+            const squares = document.querySelectorAll('.checkerboard-square');
+            
+            // Use the tracked index instead of trying to detect it
+            const selectedIndex = currentHighlightedIndex;
+            let selectedValue = null;
+            
+            if (selectedIndex !== null) {
+                const selectedSquare = squares[selectedIndex];
+                selectedValue = selectedSquare.textContent;
+                
+                // Stop all animations
+                squares.forEach(square => {
+                    square.style.animation = 'none';
+                });
+                
+                // Lock in the highlight on the selected square
+                selectedSquare.style.background = 'linear-gradient(45deg, #ffd700, #ffed4e)';
+                selectedSquare.style.color = '#000';
+                selectedSquare.style.textShadow = 'none';
+                selectedSquare.style.transform = 'scale(1.15)';
+                selectedSquare.style.boxShadow = '0 0 30px rgba(255, 215, 0, 1)';
+                selectedSquare.style.border = '3px solid #fff';
+                selectedSquare.style.zIndex = '100';
+            }
+            
+            console.log('Stopped on:', selectedValue, 'at index:', selectedIndex);
+            
+            if (selectedValue && selectedIndex !== null) {
+                const selectedType = getCriteriaTypeFromValue(selectedValue);
+                console.log('Type determined:', selectedType);
+                
+                if (selectedType === 'Special') {
+                    console.log('Special space:', selectedValue);
+                    
+                    // Disable the button
+                    const button = document.getElementById('checkerboard-button');
+                    button.disabled = true;
+                    
+                    // Show special space message
+                    const dynamicContent = document.getElementById('dynamic-content');
+                    dynamicContent.innerHTML = `
+                        <div style="text-align: center; margin: 30px 0; padding: 30px; background: rgba(255, 215, 0, 0.2); border-radius: 15px; border: 2px solid #ffd700;">
+                            <h2 style="color: #ffd700; margin-bottom: 15px;">Special Space!</h2>
+                            <p style="color: #00ffff; font-size: 20px; margin-bottom: 20px;">${selectedValue}</p>
+                            <p style="color: #fff; margin-bottom: 20px;">Special spaces not implemented yet</p>
+                            <button class="action-button" onclick="window.location.reload()">Restart Game</button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                gameState.criteriaSelected[selectedType] = selectedValue;
+                console.log('Stored in gameState:', gameState.criteriaSelected);
+                
+                // Disable the button
+                const button = document.getElementById('checkerboard-button');
+                button.disabled = true;
+                console.log('Button disabled');
+                
+                // Show criteria box BELOW checkerboard
+                const dynamicContent = document.getElementById('dynamic-content');
+                console.log('Dynamic content element:', dynamicContent);
+                
+                dynamicContent.innerHTML = `
+                    <div class="criteria-display">
+                        <div class="criteria-item">
+                            <span class="criteria-label">Genre:</span>
+                            <span class="criteria-value">${gameState.criteriaSelected.Genre || '--'}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-label">Generation:</span>
+                            <span class="criteria-value">${gameState.criteriaSelected.Generation || '--'}</span>
+                        </div>
+                        <div class="criteria-item">
+                            <span class="criteria-label">Difficulty:</span>
+                            <span class="criteria-value">${gameState.criteriaSelected.Difficulty || '--'}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 20px 0; color: #00ffff; font-size: 18px;">
+                        Selected: <span style="color: #ffd700; font-weight: bold;">${selectedValue}</span> (${selectedType})
+                    </div>
+                    
+                    <div style="text-align: center; margin: 20px 0;">
+                        <button class="action-button" onclick="window.testNextStep()">Continue to Step 2</button>
+                    </div>
+                `;
+                
+                console.log('Criteria box HTML added to dynamic-content');
+            } else {
+                console.log('ERROR: No value selected or index is null');
+            }
+        };
+        
+        const getCriteriaTypeFromValue = (value) => {
+            if (genres.includes(value)) return 'Genre';
+            if (generations.includes(value)) return 'Generation';
+            if (difficulties.includes(value)) return 'Difficulty';
+            if (specialSpaces.includes(value)) return 'Special';
+            return null;
+        };
+        
+        const showStep2 = () => {
+            // Figure out which criteria types are left
+            const selectedType = getCriteriaTypeFromValue(Object.values(gameState.criteriaSelected)[0]);
+            const criteriaTypes = ['Genre', 'Generation', 'Difficulty'];
+            const remainingTypes = criteriaTypes.filter(t => t !== selectedType);
+            
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div class="criteria-display">
+                    <div class="criteria-item">
+                        <span class="criteria-label">Genre:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Genre || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Generation:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Generation || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Difficulty:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Difficulty || '--'}</span>
+                    </div>
+                </div>
+                
+                <div class="instruction-box">
+                    <h3>Step 2: Choose Next Criteria Type</h3>
+                    <p>${gameState.players[gameState.currentPlayerIndex].name}, pick which criteria type you want to select from.</p>
+                </div>
+                
+                <div class="selection-grid" id="step2-grid">
+                    ${remainingTypes.map(type => `
+                        <div class="selection-option" data-type="${type}">
+                            ${type}
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="action-button" onclick="window.location.reload()" style="background: rgba(255, 255, 255, 0.2);">Start Over</button>
+                </div>
+            `;
+            
+            // Attach click handlers
+            document.querySelectorAll('#step2-grid .selection-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const chosenType = option.dataset.type;
+                    console.log('Player chose type:', chosenType);
+                    showStep3(chosenType);
+                });
+            });
+        };
+        
+        window.testNextStep = () => {
+            console.log('Moving to Step 2');
+            showStep2();
+        };
+        
+        window.showStep2 = showStep2;
+        
+        const showStep3 = (chosenType) => {
+            // Get the values for this type
+            let options = [];
+            if (chosenType === 'Genre') options = genres;
+            else if (chosenType === 'Generation') options = generations;
+            else if (chosenType === 'Difficulty') options = difficulties;
+            
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div class="criteria-display">
+                    <div class="criteria-item">
+                        <span class="criteria-label">Genre:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Genre || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Generation:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Generation || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Difficulty:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Difficulty || '--'}</span>
+                    </div>
+                </div>
+                
+                <div class="instruction-box">
+                    <h3>Step 3: Select Specific ${chosenType}</h3>
+                    <p>${gameState.players[gameState.currentPlayerIndex].name}, choose which ${chosenType.toLowerCase()} you want.</p>
+                </div>
+                
+                <div class="selection-grid" id="step3-grid">
+                    ${options.map(value => `
+                        <div class="selection-option" data-value="${value}" ${chosenType === 'Genre' ? `title="${genreDefinitions[value] || ''}"` : ''}>
+                            ${value}
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="action-button" onclick="window.showStep2()" style="background: rgba(255, 255, 255, 0.2);">Go Back</button>
+                </div>
+            `;
+            
+            // Attach click handlers
+            document.querySelectorAll('#step3-grid .selection-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const chosenValue = option.dataset.value;
+                    gameState.criteriaSelected[chosenType] = chosenValue;
+                    console.log('Player selected:', chosenValue, 'for', chosenType);
+                    showStep4();
+                });
+            });
+        };
+        
+        const showStep4 = () => {
+            // Figure out which type is left
+            const criteriaTypes = ['Genre', 'Generation', 'Difficulty'];
+            const selectedTypes = Object.keys(gameState.criteriaSelected);
+            const remainingType = criteriaTypes.find(t => !selectedTypes.includes(t));
+            
+            // Get the values for this type
+            let options = [];
+            if (remainingType === 'Genre') options = genres;
+            else if (remainingType === 'Generation') options = generations;
+            else if (remainingType === 'Difficulty') options = difficulties;
+            
+            // Find lowest score player (excluding current player)
+            const currentPlayerIndex = gameState.currentPlayerIndex;
+            const otherPlayers = gameState.players.filter((_, i) => i !== currentPlayerIndex);
+            const minScore = Math.min(...otherPlayers.map(p => p.score));
+            const lowestPlayers = otherPlayers.filter(p => p.score === minScore);
+            const assigningPlayer = lowestPlayers.length === 1 ? lowestPlayers[0] : lowestPlayers[Math.floor(Math.random() * lowestPlayers.length)];
+            
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div class="criteria-display">
+                    <div class="criteria-item">
+                        <span class="criteria-label">Genre:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Genre || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Generation:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Generation || '--'}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Difficulty:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Difficulty || '--'}</span>
+                    </div>
+                </div>
+                
+                <div class="instruction-box">
+                    <h3>Step 4: Final Criteria Assignment</h3>
+                    <p>${assigningPlayer.name}, choose the final ${remainingType}.</p>
+                </div>
+                
+                <div class="selection-grid" id="step4-grid">
+                    ${options.map(value => `
+                        <div class="selection-option" data-value="${value}">
+                            ${value}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Attach click handlers
+            document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const chosenValue = option.dataset.value;
+                    gameState.criteriaSelected[remainingType] = chosenValue;
+                    console.log('Final criteria selected:', gameState.criteriaSelected);
+                    
+                    // Show complete criteria and move to movie
+                    showMovieSelection();
+                });
+            });
+        };
+        
+        const showMovieSelection = () => {
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div class="criteria-display">
+                    <div class="criteria-item">
+                        <span class="criteria-label">Genre:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Genre}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Generation:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Generation}</span>
+                    </div>
+                    <div class="criteria-item">
+                        <span class="criteria-label">Difficulty:</span>
+                        <span class="criteria-value">${gameState.criteriaSelected.Difficulty}</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <h3 style="color: #ffd700;">All criteria selected!</h3>
+                    <p style="color: #00ffff; margin: 20px 0;">Ready to show the movie poster...</p>
+                    <button class="action-button" id="show-movie-btn">Show Movie</button>
+                </div>
+            `;
+            
+            document.getElementById('show-movie-btn').addEventListener('click', selectAndShowMovie);
+        };
+        
+        const selectAndShowMovie = () => {
+            const genre = gameState.criteriaSelected.Genre;
+            const generation = gameState.criteriaSelected.Generation;
+            const difficulty = gameState.criteriaSelected.Difficulty;
+            
+            // Filter movies
+            const matchingMovies = movieDatabase.filter(movie => 
+                movie.primaryGenre === genre &&
+                movie.generation === generation &&
+                movie.difficulty === difficulty
+            );
+            
+            // Select movie or fallback
+            if (matchingMovies.length === 0) {
+                console.log('No exact match found, using random movie');
+                gameState.currentMovie = movieDatabase[Math.floor(Math.random() * movieDatabase.length)];
+            } else {
+                gameState.currentMovie = matchingMovies[Math.floor(Math.random() * matchingMovies.length)];
+            }
+            
+            console.log('Selected movie:', gameState.currentMovie);
+            showCountdown();
+        };
+        
+        const showCountdown = () => {
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div style="text-align: center; margin: 50px 0;">
+                    <div style="background: rgba(255, 215, 0, 0.2); border-radius: 15px; padding: 20px; margin-bottom: 30px; border: 2px solid #ffd700;">
+                        <p style="color: #00ffff; margin: 0;">${gameState.criteriaSelected.Genre} • ${gameState.criteriaSelected.Generation} • ${gameState.criteriaSelected.Difficulty}</p>
+                    </div>
+                    <div id="countdown-number" style="font-size: 5em; color: #ffd700; font-weight: bold;">3</div>
+                </div>
+            `;
+            
+            let count = 3;
+            const countdownInterval = setInterval(() => {
+                count--;
+                const countdownEl = document.getElementById('countdown-number');
+                if (count > 0) {
+                    countdownEl.textContent = count;
+                } else if (count === 0) {
+                    countdownEl.textContent = 'GO!';
+                } else {
+                    clearInterval(countdownInterval);
+                    showMoviePoster();
+                }
+            }, 1000);
+        };
+        
+        const showMoviePoster = () => {
+            const movie = gameState.currentMovie;
+            const difficulty = gameState.criteriaSelected.Difficulty;
+            
+            // Calculate timer
+            const timeLimits = {
+                'Gimme': gameState.isMobile ? 30 : 15,
+                'Easy': gameState.isMobile ? 35 : 20,
+                'Medium': gameState.isMobile ? 45 : 30,
+                'Hard': gameState.isMobile ? 55 : 40,
+                'Stumper': gameState.isMobile ? 60 : 45
+            };
+            const timeLimit = timeLimits[difficulty] || 30;
+            
+            const dynamicContent = document.getElementById('dynamic-content');
+            dynamicContent.innerHTML = `
+                <div style="text-align: center;">
+                    <div id="timer-container" style="font-size: 2.5em; margin-bottom: 20px; padding: 15px; background: rgba(0, 255, 255, 0.2); border-radius: 15px; border: 3px solid #00ffff;">
+                        <span id="time-remaining" style="color: #00ffff; font-weight: bold;">${timeLimit}</span><span id="seconds-label" style="color: #00ffff; font-weight: bold;"> seconds</span>
+                    </div>
+                    
+                    <img src="${movie.posterUrl}" alt="Movie Poster" style="max-width: 400px; max-height: 600px; border-radius: 15px; border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); margin-bottom: 20px;" />
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto;">
+                        ${gameState.players.map((player, index) => `
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 15px; border: 2px solid rgba(0, 255, 255, 0.3);">
+                                <label style="color: #ffd700; display: block; margin-bottom: 8px; font-weight: bold;">${player.name}:</label>
+                                <input type="text" id="answer-${index}" placeholder="Movie title..." style="width: 100%; padding: 10px; border: 2px solid #00ffff; border-radius: 8px; background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 14px;" />
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button id="submit-answers" class="action-button" style="margin-top: 20px;">Submit All Answers</button>
+                </div>
+            `;
+            
+            // Start timer
+            let timeRemaining = timeLimit;
+            const timerElement = document.getElementById('time-remaining');
+            const secondsLabel = document.getElementById('seconds-label');
+            const timerContainer = document.getElementById('timer-container');
+            
+            const gameTimer = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+                
+                if (timeRemaining <= 5) {
+                    timerElement.style.color = '#ff0000';
+                    secondsLabel.style.color = '#ff0000';
+                    timerContainer.style.borderColor = '#ff0000';
+                    timerContainer.style.background = 'rgba(255, 0, 0, 0.2)';
+                } else if (timeRemaining <= 10) {
+                    timerElement.style.color = '#ffa500';
+                    secondsLabel.style.color = '#ffa500';
+                    timerContainer.style.borderColor = '#ffa500';
+                    timerContainer.style.background = 'rgba(255, 165, 0, 0.2)';
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(gameTimer);
+                    showResults();
+                }
+            }, 1000);
+            
+            document.getElementById('submit-answers').addEventListener('click', () => {
+                clearInterval(gameTimer);
+                showResults();
+            });
+        };
+        
+        const showResults = () => {
+            const movie = gameState.currentMovie;
+            const dynamicContent = document.getElementById('dynamic-content');
+            
+            dynamicContent.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="background: rgba(255, 215, 0, 0.2); border-radius: 15px; padding: 20px; margin-bottom: 30px; border: 2px solid #ffd700;">
+                        <h2 style="color: #ffd700; margin: 0 0 10px 0;">The Answer Was:</h2>
+                        <h3 style="color: #00ffff; margin: 0;">${movie.title}</h3>
+                        <div style="color: #fff; margin-top: 10px; font-size: 14px;">${movie.primaryGenre} • ${movie.generation} • ${movie.difficulty}</div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <p style="color: #00ffff; margin-bottom: 20px;">Scoring system will be added next</p>
+                        <button class="action-button" onclick="window.location.reload()">Play Again</button>
+                    </div>
+                </div>
+            `;
+        };
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+    await loadMovieDatabase();
+    initializeGame();
+});
+        
+        console.log('=== Script loaded successfully ===');
+    </script>
+</body>
+</html>
+                

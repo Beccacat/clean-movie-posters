@@ -714,13 +714,15 @@ async function loadMovieDatabase() {
                 });
             }
             
-            gameState = {
-                players: players,
-                currentPlayerIndex: 0,
-                penaltyMode: document.getElementById('penalty-toggle').classList.contains('active'),
-                isMobile: document.getElementById('platform-setup').value === 'mobile',
-                criteriaSelected: {}
-            };
+           gameState = {
+    players: players,
+    currentPlayerIndex: 0,
+    penaltyMode: document.getElementById('penalty-toggle').classList.contains('active'),
+    isMobile: document.getElementById('platform-setup').value === 'mobile',
+    criteriaSelected: {},
+    totalRounds: players.length * 2,  // 2 rounds per player
+    currentRound: 1
+};
             
             console.log('Game started:', gameState);
             
@@ -1530,7 +1532,16 @@ function calculateScore(isCorrect, player, playerIndex) {
     return { points, breakdown };
 }
 
-function nextRound() {
+       function nextRound() {
+    // Increment round counter
+    gameState.currentRound++;
+    
+    // Check if game is over
+    if (gameState.currentRound > gameState.totalRounds) {
+        showFinalResults();
+        return;
+    }
+    
     // Rotate to next player
     gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
     
@@ -1541,7 +1552,42 @@ function nextRound() {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
     renderInitialGameScreen();
-}        
+}
+
+function showFinalResults() {
+    const gameScreen = document.getElementById('game-screen');
+    
+    // Sort players by score
+    const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+    const winner = sortedPlayers[0];
+    
+    gameScreen.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <h1 style="color: #ffd700; font-size: 3em; margin-bottom: 20px;">Game Over!</h1>
+            
+            <div style="background: rgba(255, 215, 0, 0.3); border: 3px solid #ffd700; border-radius: 20px; padding: 30px; margin: 30px 0;">
+                <h2 style="color: #ffd700; margin-bottom: 10px;">🏆 Winner 🏆</h2>
+                <h3 style="color: #00ffff; font-size: 2em;">${winner.name}</h3>
+                <div style="color: #fff; font-size: 1.5em; margin-top: 10px;">${winner.score} points</div>
+            </div>
+            
+            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 20px; margin: 30px 0;">
+                <h3 style="color: #ffd700; margin-bottom: 20px;">Final Standings</h3>
+                ${sortedPlayers.map((player, index) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                        <div>
+                            <span style="color: #ffd700; font-size: 1.5em; margin-right: 15px;">#${index + 1}</span>
+                            <span style="color: #fff; font-size: 1.2em;">${player.name}</span>
+                        </div>
+                        <div style="color: #00ffff; font-size: 1.3em; font-weight: bold;">${player.score} pts</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <button class="action-button" onclick="window.location.reload()">Play Again</button>
+        </div>
+    `;
+}
         document.addEventListener('DOMContentLoaded', async () => {
     await loadMovieDatabase();
     initializeGame();

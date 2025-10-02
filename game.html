@@ -1378,13 +1378,28 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
 function checkAnswer(userAnswer, correctTitle) {
     if (!userAnswer) return false;
     
-    // Normalize both strings
+    // Number word mappings (small numbers only)
+    const numberWords = {
+        '1st': 'first', '2nd': 'second', '3rd': 'third', '4th': 'fourth',
+        '5th': 'fifth', '6th': 'sixth', '7th': 'seventh', '8th': 'eighth',
+        '9th': 'ninth', '10th': 'tenth', '1': 'one', '2': 'two', '3': 'three',
+        '4': 'four', '5': 'five', '6': 'six', '7': 'seven', '8': 'eight',
+        '9': 'nine', '10': 'ten'
+    };
+    
     const normalize = (str) => {
-        return str.toLowerCase()
-            .replace(/[^\w\s]/g, '') // Remove punctuation  
-            .replace(/\b(the|a|an)\b/g, '') // Remove articles
-            .replace(/\s+/g, ' ') // Normalize spaces
-            .trim();
+        let normalized = str.toLowerCase()
+            .replace(/[^\w\s]/g, '')
+            .replace(/\b(the|a|an)\b/g, '');
+        
+        // Replace small numbers with words (both directions)
+        Object.keys(numberWords).forEach(num => {
+            const word = numberWords[num];
+            normalized = normalized.replace(new RegExp('\\b' + num + '\\b', 'g'), word);
+            normalized = normalized.replace(new RegExp('\\b' + word + '\\b', 'g'), word);
+        });
+        
+        return normalized.replace(/\s+/g, ' ').trim();
     };
     
     const normalizedAnswer = normalize(userAnswer);
@@ -1393,24 +1408,36 @@ function checkAnswer(userAnswer, correctTitle) {
     // Exact match
     if (normalizedAnswer === normalizedTitle) return true;
     
-    // Check without spaces (handles "Ladybird" vs "Lady Bird")
+    // Check without spaces
     const answerNoSpaces = normalizedAnswer.replace(/\s/g, '');
     const titleNoSpaces = normalizedTitle.replace(/\s/g, '');
-    
     if (answerNoSpaces === titleNoSpaces) return true;
     
     // Allow 30% character difference for typos
-    if (levenshteinDistance(answerNoSpaces, titleNoSpaces) <= Math.floor(titleNoSpaces.length * 0.3)) {
+    if (levenshteinDistance(answerNoSpaces, titleNoSpaces) <= 
+        Math.floor(titleNoSpaces.length * 0.3)) {
         return true;
     }
     
+    // Extract numbers from ORIGINAL (unnormalized) title
+    const titleNumbers = correctTitle.match(/\d+/g);
+    
+    // If title has numbers, answer must contain at least one of them
+    if (titleNumbers && titleNumbers.length > 0) {
+        const hasNumber = titleNumbers.some(num => userAnswer.includes(num));
+        if (!hasNumber) return false; // Answer missing required number
+    }
+    
     // Check if answer contains all major words from title
-    const titleWords = normalizedTitle.split(' ').filter(word => word.length > 2);
+    const titleWords = normalizedTitle.split(' ').filter(word => 
+        word.length > 2 && !/^\d+$/.test(word)
+    );
     const answerWords = normalizedAnswer.split(' ');
     
     const allWordsPresent = titleWords.every(titleWord => {
         return answerWords.some(answerWord => {
-            return levenshteinDistance(titleWord, answerWord) <= Math.floor(titleWord.length * 0.3);
+            return levenshteinDistance(titleWord, answerWord) <= 
+                Math.floor(titleWord.length * 0.3);
         });
     });
     

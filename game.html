@@ -419,6 +419,21 @@
                         Timer Settings: Gimme 15s • Easy 20s • Medium 30s • Hard 40s • Stumper 45s
                     </div>
                 </div>
+const normalize = (str) => {
+    let normalized = str.toLowerCase()
+        .replace(/[^\w\s]/g, '')
+        .replace(/\b(the|a|an)\b/g, '')
+        .replace(/\band\b/g, '');  // NEW LINE - removes "and"
+    
+    // Replace small numbers with words (both directions)
+    Object.keys(numberWords).forEach(num => {
+        const word = numberWords[num];
+        normalized = normalized.replace(new RegExp('\\b' + num + '\\b', 'g'), word);
+        normalized = normalized.replace(new RegExp('\\b' + word + '\\b', 'g'), word);
+    });
+    
+    return normalized.replace(/\s+/g, ' ').trim();
+};
             </div>
             
             <div class="setup-section">
@@ -509,11 +524,13 @@ async function loadMovieDatabase() {
             console.log('Initializing setup screen');
             updatePlayerCount();
             setupEventListeners();
+updateGameLengthOptions();
         };
         
         const setupEventListeners = () => {
             document.getElementById('player-count').addEventListener('change', updatePlayerCount);
             document.getElementById('platform-setup').addEventListener('change', updateTimerDisplay);
+document.getElementById('game-length').addEventListener('change', updateGameLengthEstimate);
             document.getElementById('penalty-toggle').addEventListener('click', togglePenaltyMode);
             document.getElementById('start-game').addEventListener('click', startGame);
         };
@@ -521,6 +538,7 @@ async function loadMovieDatabase() {
         const updatePlayerCount = () => {
             const count = parseInt(document.getElementById('player-count').value);
             generatePlayerForms(count);
+updateGameLengthOptions();
             validateSetup();
         };
         
@@ -657,7 +675,61 @@ async function loadMovieDatabase() {
             document.getElementById('timer-display').textContent = 
                 `Timer Settings: Gimme ${times.Gimme}s • Easy ${times.Easy}s • Medium ${times.Medium}s • Hard ${times.Hard}s • Stumper ${times.Stumper}s`;
         };
-        
+        const updateGameLengthOptions = () => {
+    const playerCount = parseInt(document.getElementById('player-count').value);
+    const gameLengthSelect = document.getElementById('game-length');
+    
+    let options = [];
+    
+    // Adjust options based on player count
+    if (playerCount <= 3) {
+        options = [
+            { value: 2, label: 'Short Game (2 rounds per player)' },
+            { value: 3, label: 'Standard Game (3 rounds per player)' },
+            { value: 4, label: 'Long Game (4 rounds per player)' }
+        ];
+    } else if (playerCount <= 6) {
+        options = [
+            { value: 1, label: 'Short Game (1 round per player)' },
+            { value: 2, label: 'Standard Game (2 rounds per player)' },
+            { value: 3, label: 'Long Game (3 rounds per player)' }
+        ];
+    } else {
+        // 7-8 players
+        options = [
+            { value: 1, label: 'Short Game (1 round per player)' },
+            { value: 2, label: 'Standard Game (2 rounds per player)' },
+            { value: 3, label: 'Long Game (3 rounds per player - may be lengthy!)' }
+        ];
+    }
+    
+    // Clear and repopulate dropdown
+    gameLengthSelect.innerHTML = '';
+    options.forEach((option, index) => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.textContent = option.label;
+        // Default to middle option (Standard)
+        if (index === 1) optionElement.selected = true;
+        gameLengthSelect.appendChild(optionElement);
+    });
+    
+    // Update estimate
+    updateGameLengthEstimate();
+};
+
+const updateGameLengthEstimate = () => {
+    const playerCount = parseInt(document.getElementById('player-count').value);
+    const roundsPerPlayer = parseInt(document.getElementById('game-length').value);
+    const totalRounds = playerCount * roundsPerPlayer;
+    
+    // Estimate 4-5 minutes per round
+    const minMinutes = totalRounds * 4;
+    const maxMinutes = totalRounds * 5;
+    
+    document.getElementById('game-length-estimate').textContent = 
+        `Estimated time: ~${minMinutes}-${maxMinutes} minutes (${totalRounds} total rounds)`;
+};
         const togglePenaltyMode = () => {
             document.getElementById('penalty-toggle').classList.toggle('active');
         };
@@ -720,7 +792,7 @@ async function loadMovieDatabase() {
     penaltyMode: document.getElementById('penalty-toggle').classList.contains('active'),
     isMobile: document.getElementById('platform-setup').value === 'mobile',
     criteriaSelected: {},
-    totalRounds: players.length * 2,  // 2 rounds per player
+   totalRounds: players.length * parseInt(document.getElementById('game-length').value), // different numbers of rounds depending on number of players
     currentRound: 1
 };
             

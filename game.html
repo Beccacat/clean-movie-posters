@@ -418,23 +418,18 @@
                     <div id="timer-display" style="margin-top: 10px; font-size: 14px; color: #00ffff;">
                         Timer Settings: Gimme 15s • Easy 20s • Medium 30s • Hard 40s • Stumper 45s
                     </div>
-                </div>
-const normalize = (str) => {
-    let normalized = str.toLowerCase()
-        .replace(/[^\w\s]/g, '')
-        .replace(/\b(the|a|an)\b/g, '')
-        .replace(/\band\b/g, '');  // NEW LINE - removes "and"
-    
-    // Replace small numbers with words (both directions)
-    Object.keys(numberWords).forEach(num => {
-        const word = numberWords[num];
-        normalized = normalized.replace(new RegExp('\\b' + num + '\\b', 'g'), word);
-        normalized = normalized.replace(new RegExp('\\b' + word + '\\b', 'g'), word);
-    });
-    
-    return normalized.replace(/\s+/g, ' ').trim();
-};
-            </div>
+           </div>
+
+<div style="margin-top: 20px; text-align: center;">
+    <label style="font-size: 16px; margin-bottom: 10px; display: block;">Game Length:</label>
+    <select id="game-length" style="width: 300px; padding: 12px; font-size: 16px; text-align: center;">
+        <!-- Options will be populated dynamically -->
+    </select>
+    <div id="game-length-estimate" style="margin-top: 10px; font-size: 14px; color: #00ffff;">
+        Estimated time will appear here
+    </div>
+</div>
+</div>
             
             <div class="setup-section">
                 <h2 class="section-title">Host Setup</h2>

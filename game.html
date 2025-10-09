@@ -1621,22 +1621,28 @@ function calculateScore(isCorrect, player, playerIndex) {
     document.getElementById('game-screen').style.display = 'block';
     renderInitialGameScreen();
 }
-
 function showFinalResults() {
     const gameScreen = document.getElementById('game-screen');
     
     // Sort players by score
     const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
-    const winner = sortedPlayers[0];
+    const topScore = sortedPlayers[0].score;
+    
+    // Find all players with the top score (for ties)
+    const winners = sortedPlayers.filter(player => player.score === topScore);
+    const isTie = winners.length > 1;
     
     gameScreen.innerHTML = `
         <div style="text-align: center; padding: 40px;">
             <h1 style="color: #ffd700; font-size: 3em; margin-bottom: 20px;">Game Over!</h1>
             
             <div style="background: rgba(255, 215, 0, 0.3); border: 3px solid #ffd700; border-radius: 20px; padding: 30px; margin: 30px 0;">
-                <h2 style="color: #ffd700; margin-bottom: 10px;">🏆 Winner 🏆</h2>
-                <h3 style="color: #00ffff; font-size: 2em;">${winner.name}</h3>
-                <div style="color: #fff; font-size: 1.5em; margin-top: 10px;">${winner.score} points</div>
+                <h2 style="color: #ffd700; margin-bottom: 10px;">🏆 ${isTie ? 'Tie Game!' : 'Winner'} 🏆</h2>
+                ${isTie ? 
+                    `<h3 style="color: #00ffff; font-size: 2em;">${winners.map(w => w.name).join(' & ')}</h3>` :
+                    `<h3 style="color: #00ffff; font-size: 2em;">${winners[0].name}</h3>`
+                }
+                <div style="color: #fff; font-size: 1.5em; margin-top: 10px;">${topScore} points</div>
             </div>
             
             <div style="background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 20px; margin: 30px 0;">

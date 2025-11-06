@@ -1663,6 +1663,7 @@ function showFinalResults() {
     `;
 }
         document.addEventListener('DOMContentLoaded', async () => {
+document.getElementById('start-game').addEventListener('click', startGame);
     await loadMovieDatabase();
     initializeGame();
 });

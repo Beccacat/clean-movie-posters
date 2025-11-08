@@ -384,6 +384,38 @@
             font-weight: bold;
             color: #ffd700;
         }
+.genre-definitions-panel {
+    margin: 20px 0;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--primary-color, #00ffff);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.genre-definitions-panel summary {
+    cursor: pointer;
+    color: var(--primary-color, #00ffff);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.definitions-list {
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.definition-item {
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--primary-color, #00ffff);
+}
+
+.definition-item strong {
+    color: var(--primary-color, #00ffff);
+}
+
     </style>
 </head>
 <body>
@@ -986,7 +1018,7 @@ const updateGameLengthEstimate = () => {
                     </div>
                     
                     <div style="text-align: center; margin: 20px 0;">
-                        <button class="action-button" onclick="window.testNextStep()">Continue to Step 2</button>
+                        <button class="action-button" onclick="window.testNextStep()">Select the next category</button>
                     </div>
                 `;
                 
@@ -1090,7 +1122,20 @@ const updateGameLengthEstimate = () => {
                     <h3>Step 3: Select Specific ${chosenType}</h3>
                     <p>${gameState.players[gameState.currentPlayerIndex].name}, choose which ${chosenType.toLowerCase()} you want.</p>
                 </div>
-                
+                ${chosenType === 'Genre' ? `
+    <div class="genre-definitions-panel">
+        <details>
+            <summary>Genre Guide (tap to expand)</summary>
+            <div class="definitions-list">
+                ${genres.map(genre => `
+                    <div class="definition-item">
+                        <strong>${genre}:</strong> ${genreDefinitions[genre]}
+                    </div>
+                `).join('')}
+            </div>
+        </details>
+    </div>
+` : ''}
                 <div class="selection-grid" id="step3-grid">
                     ${options.map(value => `
                         <div class="selection-option" data-value="${value}" ${chosenType === 'Genre' ? `title="${genreDefinitions[value] || ''}"` : ''}>
@@ -1181,7 +1226,20 @@ document.querySelectorAll('#step3-grid .selection-option').forEach(option => {
                     <h3>Step 4: Final Criteria Assignment</h3>
                     <p>${assigningPlayer.name}, choose the final ${remainingType}.</p>
                 </div>
-                
+                ${remainingType === 'Genre' ? `
+    <div class="genre-definitions-panel">
+        <details>
+            <summary>Genre Guide (tap to expand)</summary>
+            <div class="definitions-list">
+                ${genres.map(genre => `
+                    <div class="definition-item">
+                        <strong>${genre}:</strong> ${genreDefinitions[genre]}
+                    </div>
+                `).join('')}
+            </div>
+        </details>
+    </div>
+` : ''}
                 <div class="selection-grid" id="step4-grid">
                     ${options.map(value => `
                         <div class="selection-option" data-value="${value}">
@@ -1241,7 +1299,7 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
                         <span class="criteria-label">Generation:</span>
                         <span class="criteria-value">${gameState.criteriaSelected.Generation}</span>
                     </div>
-                    <div class="criteria-item">
+                    <div class="criteria-item">.Ctan
                         <span class="criteria-label">Difficulty:</span>
                         <span class="criteria-value">${gameState.criteriaSelected.Difficulty}</span>
                     </div>

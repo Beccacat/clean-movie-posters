@@ -1315,34 +1315,91 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
             document.getElementById('show-movie-btn').addEventListener('click', selectAndShowMovie);
         };
         
-        const selectAndShowMovie = () => {
-            const genre = gameState.criteriaSelected.Genre;
-            const generation = gameState.criteriaSelected.Generation;
-            const difficulty = gameState.criteriaSelected.Difficulty;
+       const selectAndShowMovie = () => {
+    const genre = gameState.criteriaSelected.Genre;
+    const generation = gameState.criteriaSelected.Generation;
+    const difficulty = gameState.criteriaSelected.Difficulty;
 
- console.log('=== MOVIE SELECTION DEBUG ===');
+    console.log('=== MOVIE SELECTION DEBUG ===');
     console.log('Criteria selected:', gameState.criteriaSelected);
     console.log('Looking for:', { genre, generation, difficulty });
-    console.log('Sample movies from database:', movieDatabase.slice(0, 3));
+    
+    // First try: exact match
+    let matchingMovies = movieDatabase.filter(movie => 
+        movie.primaryGenre === genre &&
+        movie.generation === generation &&
+        movie.difficulty === difficulty
+    );
+    
+    let fallbackMessage = '';
+    
+    // If no exact match, try fallback strategies
+    if (matchingMovies.length === 0) {
+        console.log('No exact match found, trying fallbacks...');
+        
+        // Fallback 1: Same genre and generation, different difficulty
+        matchingMovies = movieDatabase.filter(movie => 
+            movie.primaryGenre === genre &&
+            movie.generation === generation
+        );
+        
+        if (matchingMovies.length > 0) {
+            // Find closest difficulty
+            const difficulties = ['Gimme', 'Easy', 'Medium', 'Hard', 'Stumper'];
+            const targetIndex = difficulties.indexOf(difficulty);
             
-            // Filter movies
-            const matchingMovies = movieDatabase.filter(movie => 
+            // Sort by difficulty distance
+            matchingMovies.sort((a, b) => {
+                const aIndex = difficulties.indexOf(a.difficulty);
+                const bIndex = difficulties.indexOf(b.difficulty);
+                return Math.abs(aIndex - targetIndex) - Math.abs(bIndex - targetIndex);
+            });
+            
+            const selectedMovie = matchingMovies[0];
+            const selectedDiffIndex = difficulties.indexOf(selectedMovie.difficulty);
+            const diffChange = selectedDiffIndex < targetIndex ? 'easier' : 'harder';
+            
+            fallbackMessage = `Whoops! No ${difficulty} ${genre} from ${generation} available. Here's a ${selectedMovie.difficulty} instead (a bit ${diffChange}).`;
+        }
+        // Fallback 2: Same genre and difficulty, different generation
+        else {
+            matchingMovies = movieDatabase.filter(movie => 
                 movie.primaryGenre === genre &&
-                movie.generation === generation &&
                 movie.difficulty === difficulty
             );
             
-            // Select movie or fallback
-            if (matchingMovies.length === 0) {
-                console.log('No exact match found, using random movie');
-                gameState.currentMovie = movieDatabase[Math.floor(Math.random() * movieDatabase.length)];
-            } else {
-                gameState.currentMovie = matchingMovies[Math.floor(Math.random() * matchingMovies.length)];
+            if (matchingMovies.length > 0) {
+                fallbackMessage = `Whoops! No ${generation} ${difficulty} ${genre} available. Here's one from a different generation.`;
             }
-            
-            console.log('Selected movie:', gameState.currentMovie);
-            showCountdown();
-        };
+            // Fallback 3: Just same genre
+            else {
+                matchingMovies = movieDatabase.filter(movie => 
+                    movie.primaryGenre === genre
+                );
+                
+                if (matchingMovies.length > 0) {
+                    fallbackMessage = `Whoops! That exact combination isn't available. Here's another ${genre} movie to keep things on theme!`;
+                }
+                // Fallback 4: Give up, pick random
+                else {
+                    matchingMovies = movieDatabase;
+                    fallbackMessage = `Whoops! No ${genre} movies available at all (!). Here's a random movie instead - good luck!`;
+                }
+            }
+        }
+    }
+    
+    // Store the fallback message to show later
+    gameState.fallbackMessage = fallbackMessage;
+    
+    // Select random movie from matching set
+    gameState.currentMovie = matchingMovies[Math.floor(Math.random() * matchingMovies.length)];
+    
+    console.log('Selected movie:', gameState.currentMovie);
+    console.log('Fallback message:', fallbackMessage);
+    
+    showCountdown();
+};
         
         const showCountdown = () => {
             const dynamicContent = document.getElementById('dynamic-content');
@@ -1391,6 +1448,12 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
                         <span id="time-remaining" style="color: #00ffff; font-weight: bold;">${timeLimit}</span><span id="seconds-label" style="color: #00ffff; font-weight: bold;"> seconds</span>
                     </div>
                     
+${gameState.fallbackMessage ? `
+    <div style="background: rgba(255, 165, 0, 0.3); border: 2px solid #ff8c00; border-radius: 10px; padding: 15px; margin: 20px auto; max-width: 600px; text-align: center; animation: pulse 2s infinite;">
+        <p style="color: #ffa500; margin: 0; font-weight: bold;">${gameState.fallbackMessage}</p>
+    </div>
+` : ''}
+
                     <img src="${movie.posterUrl}" alt="Movie Poster" style="max-width: 400px; max-height: 600px; border-radius: 15px; border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); margin-bottom: 20px;" />
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto;">
@@ -1500,6 +1563,10 @@ document.querySelectorAll('#step4-grid .selection-option').forEach(option => {
             <button class="action-button" onclick="nextRound()">Next Round</button>
         </div>
     `;
+
+    // Clear fallback message for next round
+    gameState.fallbackMessage = '';
+
 };
 
 function checkAnswer(userAnswer, correctTitle) {
